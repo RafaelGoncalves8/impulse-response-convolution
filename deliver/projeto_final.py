@@ -28,10 +28,7 @@ import numpy as np
 from scipy.io import wavfile
 
 # Play wav file
-import sys
 from subprocess import call
-
-from scipy import signal
 
 
 # ### Importando respostas ao sinal de impulso
@@ -98,25 +95,16 @@ for f in ir_files:
 ir_fft = []
 for e in ir:
     fft = np.fft.fft(e, size_data)
-    fft_norm = fft/(np.mean(fft))
-    ir_fft.append(fft_norm)
-    plt.plot(fft_norm)
-
-
-# In[11]:
-
-
-ans_fft = []
-for e in ir_fft:
-    ans_fft.append(np.multiply(data_fft, e))
+    ir_fft.append(fft)
 
 
 # In[12]:
 
 
 ans = []
-for e in ans_fft:
-    ans.append(np.fft.ifft(e))
+for e in ir_fft:
+    ifft = np.fft.ifft(np.multiply(data_fft, e))
+    ans.append(ifft*(np.max(abs(data))/np.max(abs(ifft))))
 
 
 # In[13]:
@@ -127,9 +115,15 @@ for i, e in enumerate(ans):
     wavfile.write(os.path.join(out_path, ir_files[i].split('.')[0] + '_out.wav'), fs, e.astype('int16'))
 
 
-# In[16]:
+# In[ ]:
 
 
 for i, e in enumerate(ans):
     call(["xdg-open", os.path.join(out_path, ir_files[i].split('.')[0] + '_out.wav')])
+
+
+# In[ ]:
+
+
+
 
